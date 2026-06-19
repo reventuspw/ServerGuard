@@ -2,20 +2,28 @@
 
 set -e
 
-PARTITION="/dev/nvme0n1p1"
-SAVE_DIR="/home/user/snapshots"
+BACKUP_ROOT="/home/reventus/backups"
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M")
+DEST="$BACKUP_ROOT/$TIMESTAMP"
 
-mkdir -p "$SAVE_DIR"
+mkdir -p "$DEST"
 
-SNAPSHOT_FILE="$SAVE_DIR/snapshot_$(basename "$PARTITION")_$(date +%Y%m%d_%H%M%S).fsa"
+echo "Starting backup to $DEST ..."
+start=$SECONDS
 
-echo "Freezing filesystem..."
-sudo fsfreeze -f /
+rsync -aHAX \
+    --numeric-ids \
+    --delete \
+    --exclude=/proc/** \
+    --exclude=/sys/** \
+    --exclude=/dev/** \
+    --exclude=/run/** \
+    --exclude=/tmp/** \
+    --exclude=/mnt/** \
+    --exclude=/media/** \
+    --exclude=/lost+found \
+    --exclude="$BACKUP_ROOT/**" \
+    / "$DEST"
 
-echo "Saving snapshot to $SNAPSHOT_FILE ..."
-sudo fsarchiver savefs "$SNAPSHOT_FILE" "$PARTITION"
-
-echo "Unfreezing filesystem..."
-sudo fsfreeze -u /
-
-echo "Done: $SNAPSHOT_FILE"
+echo "  -> done in $((SECONDS - start))s"
+echo "Backup completed: $DEST"
