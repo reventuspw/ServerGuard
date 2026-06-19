@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e
 
 BACKUP_ROOT="/home/reventus/backups"
@@ -8,8 +7,7 @@ DEST="$BACKUP_ROOT/$TIMESTAMP"
 
 mkdir -p "$DEST"
 
-echo "Starting backup to $DEST ..."
-start=$SECONDS
+echo "Creating snapshot..."
 
 rsync -aHAX \
     --numeric-ids \
@@ -25,5 +23,6 @@ rsync -aHAX \
     --exclude="$BACKUP_ROOT/**" \
     / "$DEST"
 
-echo "  -> done in $((SECONDS - start))s"
-echo "Backup completed: $DEST"
+ln -sfn "$DEST" "$BACKUP_ROOT/latest"
+
+echo "Snapshot complete: $DEST"
