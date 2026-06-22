@@ -1,2 +1,1 @@
-- Move all scripts from `snapshot/` to `/usr/local/bin/`
 - sshfs package will be needed for accessing files on the other PC: `sudo apt istall sshfs`
