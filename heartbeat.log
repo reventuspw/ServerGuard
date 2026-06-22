@@ -1,3 +1,0 @@
-2026-06-22 14:12:09  INFO      Heartbeat monitor started — target: 172.16.36.108  interval: 30s
-2026-06-22 14:12:09  INFO      UP  172.16.36.108 is reachable
-2026-06-22 14:12:19  INFO      Heartbeat monitor stopped by user
