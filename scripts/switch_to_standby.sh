@@ -19,6 +19,9 @@ run_timed() {
 
 TARGET_UUID=$(blkid -s UUID -o value "$STANDBY_PARTITION")
 
+echo "Unmounting p2 if mounted..."
+umount "$STANDBY_PARTITION" 2>/dev/null || true
+
 echo "Reading kernel from p2..."
 start=$SECONDS
 TMPMT=$(mktemp -d)

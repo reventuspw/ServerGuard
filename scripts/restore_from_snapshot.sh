@@ -39,6 +39,7 @@ umount -l "$MOUNTPOINT/dev"      2>/dev/null || true
 umount -l "$MOUNTPOINT/proc"     2>/dev/null || true
 umount -l "$MOUNTPOINT/sys"      2>/dev/null || true
 umount -l "$MOUNTPOINT"          2>/dev/null || true
+umount "$ACTIVE_PARTITION"       2>/dev/null || true
 
 run_timed "Formatting p3..."          mkfs.ext4 -F "$ACTIVE_PARTITION"
 run_timed "Mounting p3..."            mount "$ACTIVE_PARTITION" "$MOUNTPOINT"
