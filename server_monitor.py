@@ -9,17 +9,20 @@ from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
 
+today = datetime.now().date()
+
 SCRIPT_DIR = Path(__file__).parent
-LOG_FILE = SCRIPT_DIR / "server_monitor.log"
-PING_INTERVAL = 30  # seconds between pings
-PING_TIMEOUT = 5    # seconds to wait for ping response
+LOG_FILE_NAME = f"{today}.log"
+LOG_FILE_PATH = os.path.join(SCRIPT_DIR, "logs", LOG_FILE_NAME)
+PING_INTERVAL = 30 # seconds between pings
+PING_TIMEOUT = 5 # seconds to wait for ping response
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s  %(levelname)-8s  %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
     handlers=[
-        logging.FileHandler(LOG_FILE),
+        logging.FileHandler(LOG_FILE_PATH),
         logging.StreamHandler(sys.stdout),
     ],
 )
@@ -45,7 +48,7 @@ def ping(ip: str) -> bool:
 
 
 def run(ip: str) -> None:
-    log.info(f"Server monitor started — target: {ip}  interval: {PING_INTERVAL}s")
+    log.info(f"Server monitor started - target: {ip}  interval: {PING_INTERVAL}s")
     was_up: bool | None = None
 
     while True:

@@ -18,4 +18,6 @@
 
 - Make server check if the other server is in active or standby mode before taking over to ensure both servers aren't active.
 
-- If main server is down, `server_monitor.py` rebuilds from latest backup and boots into the rebuilt OS snapshot.
+- If main server is down, `server_monitor.py` runs `/scripts/restore_from_snapshot.sh`.
+
+- Make `server_monitor.py` monitor the status of the 2nd PC and run `/scripts/switch_to_standby.sh` or `/scripts/restore_from_snapshot.sh`.
