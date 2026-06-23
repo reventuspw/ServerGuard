@@ -10,7 +10,7 @@
 
 - Create a Python script that monitors the state of a remote server.                    [DONE]
 
-- Make `server_monitor.py` run `/scripts/backup_remote_pc.sh` every X minutes.
+- Make `server_monitor.py` run `/scripts/backup_remote_pc.sh` every X minutes if in standby.
 
 - Make `server_monitor.py` verify if a server is down based on multiple factors such as unreachable via ping, API request fails, internet connection, etc.
 

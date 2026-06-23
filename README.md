@@ -11,7 +11,7 @@ Both nodes run `active_monitor.py`, which determines the current role and acts a
 ```
 ┌─────────────────────────┐         ┌─────────────────────────┐
 │        Node A           │         │        Node B           │
-│                         │◄───────►│                         │
+│                         │<───────>│                         │
 │  Role: ACTIVE           │   LAN   │  Role: STANDBY          │
 │                         │         │                         │
 │  • Production services  │         │  • active_monitor.py    │
@@ -20,16 +20,16 @@ Both nodes run `active_monitor.py`, which determines the current role and acts a
 └─────────────────────────┘         └─────────────────────────┘
           │                                      │
     ┌─────┴──────┐                        ┌──────┴─────┐
-    │  P1 (boot) │                        │  P1 (boot) │  ← EFI / GRUB
-    │  P2        │                        │  P2        │  ← Standby OS (immutable)
-    │  P3        │                        │  P3        │  ← Active OS (snapshot target)
+    │  P1 (boot) │                        │  P1 (boot) │  <- EFI / GRUB
+    │  P2        │                        │  P2        │  <- Standby OS (immutable)
+    │  P3        │                        │  P3        │  <- Active OS (snapshot target)
     └────────────┘                        └────────────┘
 ```
 
 - **Active** boots from P3, runs services, writes a heartbeat every second.
 - **Standby** boots from P2, monitors the Active node, pulls remote snapshots on a configurable interval.
 - If Active goes down -> Standby formats P3, restores latest snapshot, reboots as Active.
-- If both report Active -> both drop to Standby, newest heartbeat wins.
+- If both report Active -> both drop to Standby activating the scenario below.
 - If both report Standby -> newest heartbeat becomes Active.
 
 ---
