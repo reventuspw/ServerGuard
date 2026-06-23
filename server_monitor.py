@@ -34,7 +34,6 @@ def load_remote_ip() -> str:
         sys.exit(1)
     return ip.strip('"').strip("'")
 
-
 def ping(ip: str) -> bool:
     if platform.system() == "Windows":
         cmd = ["ping", "-n", "1", "-w", str(PING_TIMEOUT * 1000), ip]
