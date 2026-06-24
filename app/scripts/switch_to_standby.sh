@@ -14,7 +14,7 @@ run_timed() {
     echo "$label"
     local start=$SECONDS
     "$@"
-    echo "  -> done in $((SECONDS - start))s"
+    echo " -> done in $((SECONDS - start))s"
 }
 
 TARGET_UUID=$(blkid -s UUID -o value "$STANDBY_PARTITION")
@@ -30,7 +30,7 @@ KERNEL=$(ls "$TMPMT/boot/vmlinuz-"* 2>/dev/null | sort -V | tail -1 | sed "s|$TM
 INITRD=$(ls "$TMPMT/boot/initrd.img-"* 2>/dev/null | sort -V | tail -1 | sed "s|$TMPMT||")
 umount "$TMPMT"
 rmdir "$TMPMT"
-echo "  -> done in $((SECONDS - start))s"
+echo " -> done in $((SECONDS - start))s"
 
 if [ -z "$KERNEL" ] || [ -z "$INITRD" ]; then
     echo "ERROR: Could not find kernel or initrd on $STANDBY_PARTITION"

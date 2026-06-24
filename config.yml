@@ -1,0 +1,8 @@
+monitor:
+  ping_interval: 30 # seconds between pings
+  ping_timeout: 5 # seconds to wait for a ping response
+
+logging:
+  log_dir: logs
+  format: "%(asctime)s  %(levelname)-8s  %(message)s"
+  datefmt: "%Y-%m-%d %H:%M:%S"

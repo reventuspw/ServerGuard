@@ -8,7 +8,7 @@ run_timed() {
     echo "$label"
     local start=$SECONDS
     "$@"
-    echo "  -> done in $((SECONDS - start))s"
+    echo " -> done in $((SECONDS - start))s"
 }
 
 echo "Locating latest snapshot..."
@@ -57,7 +57,7 @@ cp "$MOUNTPOINT/etc/fstab" "$MOUNTPOINT/etc/fstab.bak"
 sed -i \
     "s|UUID=[a-zA-Z0-9-]*[[:space:]]*/[[:space:]]*ext4|UUID=$P3_UUID / ext4|" \
     "$MOUNTPOINT/etc/fstab"
-echo "  -> done"
+echo " -> done"
 
 echo "Preparing chroot..."
 mount --bind /dev "$MOUNTPOINT/dev"
@@ -65,7 +65,7 @@ mount --bind /proc "$MOUNTPOINT/proc"
 mount --bind /sys "$MOUNTPOINT/sys"
 mkdir -p "$MOUNTPOINT/boot/efi"
 mount "$EFI_PARTITION" "$MOUNTPOINT/boot/efi"
-echo "  -> done"
+echo " -> done"
 
 run_timed "Installing bootloader..."  chroot "$MOUNTPOINT" grub-install /dev/nvme0n1
 run_timed "Updating grub..."          chroot "$MOUNTPOINT" update-grub

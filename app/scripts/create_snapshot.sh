@@ -13,7 +13,7 @@ run_timed() {
     echo "$label"
     local start=$SECONDS
     "$@"
-    echo "  -> done in $((SECONDS - start))s"
+    echo " -> done in $((SECONDS - start))s"
 }
 
 run_timed "Creating snapshot..." \

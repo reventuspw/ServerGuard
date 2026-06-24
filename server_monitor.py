@@ -9,20 +9,27 @@ import subprocess
 import platform
 from datetime import datetime
 from pathlib import Path
+import yaml
 from dotenv import load_dotenv
 
 today = datetime.now().date()
 
 SCRIPT_DIR = Path(__file__).parent
-LOG_FILE_NAME = f"{today}.log"
-LOG_FILE_PATH = os.path.join(SCRIPT_DIR, "logs", LOG_FILE_NAME)
-PING_INTERVAL = 30 # seconds between pings
-PING_TIMEOUT = 5 # seconds to wait for ping response
+
+with open(SCRIPT_DIR / "config.yml") as f:
+    _cfg = yaml.safe_load(f)
+
+PING_INTERVAL: int = _cfg["monitor"]["ping_interval"]
+PING_TIMEOUT: int = _cfg["monitor"]["ping_timeout"]
+_log_cfg = _cfg["logging"]
+LOG_FILE_PATH = SCRIPT_DIR / _log_cfg["log_dir"] / f"{today}.log"
+
+LOG_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s  %(levelname)-8s  %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
+    format=_log_cfg["format"],
+    datefmt=_log_cfg["datefmt"],
     handlers=[
         logging.FileHandler(LOG_FILE_PATH),
         logging.StreamHandler(sys.stdout),
