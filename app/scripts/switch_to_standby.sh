@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-source "$(dirname "$0")/../.env"
+source "$(dirname "$0")/../../.env"
+source "$(dirname "$0")/_resolve_ips.sh"
 
 CURRENT_ROOT=$(findmnt -n -o SOURCE /)
 if [ "$CURRENT_ROOT" = "$STANDBY_PARTITION" ]; then

@@ -1,7 +1,17 @@
 #!/bin/bash
 set -e
 
-source "$(dirname "$0")/../.env"
+source "$(dirname "$0")/../../.env"
+source "$(dirname "$0")/_resolve_ips.sh"
+
+cleanup() {
+    umount -l "$MOUNTPOINT/boot/efi" 2>/dev/null || true
+    umount -l "$MOUNTPOINT/dev"      2>/dev/null || true
+    umount -l "$MOUNTPOINT/proc"     2>/dev/null || true
+    umount -l "$MOUNTPOINT/sys"      2>/dev/null || true
+    umount -l "$MOUNTPOINT"          2>/dev/null || true
+}
+trap cleanup EXIT
 
 run_timed() {
     local label="$1"; shift
@@ -51,6 +61,12 @@ run_timed "Restoring snapshot to p3..." \
         "$LATEST"/ \
         "$MOUNTPOINT"/
 
+mkdir -p "$MOUNTPOINT/run"
+
+echo "Removing snap mount units (snap data excluded from snapshot)..."
+find "$MOUNTPOINT/etc/systemd" -name "snap-*.mount" -delete 2>/dev/null || true
+echo " -> done"
+
 echo "Fixing fstab..."
 P3_UUID=$(blkid -s UUID -o value "$ACTIVE_PARTITION")
 cp "$MOUNTPOINT/etc/fstab" "$MOUNTPOINT/etc/fstab.bak"
@@ -60,6 +76,7 @@ sed -i \
 echo " -> done"
 
 echo "Preparing chroot..."
+mkdir -p "$MOUNTPOINT/dev" "$MOUNTPOINT/proc" "$MOUNTPOINT/sys"
 mount --bind /dev "$MOUNTPOINT/dev"
 mount --bind /proc "$MOUNTPOINT/proc"
 mount --bind /sys "$MOUNTPOINT/sys"
@@ -67,17 +84,10 @@ mkdir -p "$MOUNTPOINT/boot/efi"
 mount "$EFI_PARTITION" "$MOUNTPOINT/boot/efi"
 echo " -> done"
 
-run_timed "Installing bootloader..."  chroot "$MOUNTPOINT" grub-install /dev/nvme0n1
+run_timed "Installing bootloader..."  chroot "$MOUNTPOINT" grub-install "$GRUB_DISK"
 run_timed "Updating grub..."          chroot "$MOUNTPOINT" update-grub
 
 sync
-
-echo "Cleaning up..."
-umount -l "$MOUNTPOINT/boot/efi" || true
-umount -l "$MOUNTPOINT/dev"      || true
-umount -l "$MOUNTPOINT/proc"     || true
-umount -l "$MOUNTPOINT/sys"      || true
-umount -l "$MOUNTPOINT"          || true
 
 echo "Restore complete."
 echo "Rebooting..."

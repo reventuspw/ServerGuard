@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-source "$(dirname "$0")/../.env"
+source "$(dirname "$0")/../../.env"
+source "$(dirname "$0")/_resolve_ips.sh"
 
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M")
 DEST="$BACKUP_ROOT/$TIMESTAMP"
@@ -22,10 +23,10 @@ run_timed "Backing up $REMOTE_USER@$REMOTE_IP to $DEST ..." \
         --delete \
         -e "ssh -c aes128-gcm@openssh.com" \
         --rsync-path="sudo rsync" \
-        --filter='- /proc/' \
-        --filter='- /sys/' \
-        --filter='- /dev/' \
-        --filter='- /run/' \
+        --filter='- /proc/**' \
+        --filter='- /sys/**' \
+        --filter='- /dev/**' \
+        --filter='- /run/**' \
         --filter='- /tmp/' \
         --filter='- /mnt/' \
         --filter='- /media/' \
