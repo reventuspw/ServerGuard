@@ -63,8 +63,28 @@ run_timed "Restoring snapshot to p3..." \
 
 mkdir -p "$MOUNTPOINT/run"
 
-echo "Removing snap mount units (snap data excluded from snapshot)..."
-find "$MOUNTPOINT/etc/systemd" -name "snap-*.mount" -delete 2>/dev/null || true
+if grep -q '/swapfile' "$MOUNTPOINT/etc/fstab" 2>/dev/null; then
+    echo "Recreating swapfile (${SWAP_SIZE})..."
+    fallocate -l "$SWAP_SIZE" "$MOUNTPOINT/swapfile"
+    chmod 600 "$MOUNTPOINT/swapfile"
+    mkswap "$MOUNTPOINT/swapfile"
+    echo " -> done"
+fi
+
+echo "Removing snap systemd units (snap data excluded from snapshot)..."
+find "$MOUNTPOINT/etc/systemd" -name "snap-*.mount"   -delete 2>/dev/null || true
+find "$MOUNTPOINT/etc/systemd" -name "snap.*.service" -delete 2>/dev/null || true
+find "$MOUNTPOINT/etc/systemd" -name "snap.*.timer"   -delete 2>/dev/null || true
+echo " -> done"
+
+echo "Fixing CIFS fstab entries (add _netdev,nofail)..."
+sed -i '/cifs/ s/\bauto\b/_netdev,nofail,auto/' "$MOUNTPOINT/etc/fstab"
+echo " -> done"
+
+echo "Ensuring network share mount points exist..."
+while IFS= read -r mp; do
+    mkdir -p "$MOUNTPOINT/$mp"
+done < <(awk '/cifs/{print $2}' "$MOUNTPOINT/etc/fstab")
 echo " -> done"
 
 echo "Fixing fstab..."

@@ -27,19 +27,19 @@ run_timed "Backing up $REMOTE_USER@$REMOTE_IP to $DEST ..." \
         --filter='- /sys/**' \
         --filter='- /dev/**' \
         --filter='- /run/**' \
-        --filter='- /tmp/' \
-        --filter='- /mnt/' \
-        --filter='- /media/' \
-        --filter='- /cdrom/' \
+        --filter='- /tmp/**' \
+        --filter='- /mnt/**' \
+        --filter='- /media/**' \
+        --filter='- /cdrom/**' \
         --filter='- /lost+found' \
         --filter='- /swapfile' \
-        --filter='- /snap/' \
-        --filter='- /share2/' \
-        --filter='- /var/snap/' \
-        --filter='- /var/lib/snapd/' \
-        --filter='- /var/cache/' \
-        --filter='- /var/log/' \
-        --filter='- /var/tmp/' \
+        --filter='- /snap/**' \
+        --filter='- /share2/**' \
+        --filter='- /var/snap/**' \
+        --filter='- /var/lib/snapd/**' \
+        --filter='- /var/cache/**' \
+        --filter='- /var/log/**' \
+        --filter='- /var/tmp/**' \
         ${REMOTE_USER}@${REMOTE_IP}:/ "$DEST"
 
 ln -sfn "$DEST" "$BACKUP_ROOT/latest"
