@@ -77,21 +77,25 @@ find "$MOUNTPOINT/etc/systemd" -name "snap.*.service" -delete 2>/dev/null || tru
 find "$MOUNTPOINT/etc/systemd" -name "snap.*.timer"   -delete 2>/dev/null || true
 echo " -> done"
 
-echo "Fixing CIFS fstab entries (add _netdev,nofail)..."
-sed -i '/cifs/ s/\bauto\b/_netdev,nofail,auto/' "$MOUNTPOINT/etc/fstab"
+echo "Fixing network filesystem fstab entries (defer to automount)..."
+sed -i '/\bcifs\b\|\bnfs\b/ s/\bauto\b/_netdev,nofail,x-systemd.automount/' "$MOUNTPOINT/etc/fstab"
 echo " -> done"
 
 echo "Ensuring network share mount points exist..."
 while IFS= read -r mp; do
     mkdir -p "$MOUNTPOINT/$mp"
-done < <(awk '/cifs/{print $2}' "$MOUNTPOINT/etc/fstab")
+done < <(awk '!/^#/ && /cifs|nfs/ {print $2}' "$MOUNTPOINT/etc/fstab")
 echo " -> done"
 
-echo "Fixing fstab..."
+echo "Fixing fstab UUIDs..."
 P3_UUID=$(blkid -s UUID -o value "$ACTIVE_PARTITION")
+EFI_UUID=$(blkid -s UUID -o value "$EFI_PARTITION")
 cp "$MOUNTPOINT/etc/fstab" "$MOUNTPOINT/etc/fstab.bak"
 sed -i \
     "s|UUID=[a-zA-Z0-9-]*[[:space:]]*/[[:space:]]*ext4|UUID=$P3_UUID / ext4|" \
+    "$MOUNTPOINT/etc/fstab"
+sed -i \
+    "s|UUID=[a-zA-Z0-9-]*[[:space:]]*/boot/efi|UUID=$EFI_UUID /boot/efi|" \
     "$MOUNTPOINT/etc/fstab"
 echo " -> done"
 
