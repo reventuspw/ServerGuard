@@ -95,6 +95,9 @@ def run(ip: str) -> None:
         is_up = ping(ip)
 
         if is_up:
+
+            #RUN CREATE SNAPSHOT HERE EVERY 30 MIN
+
             if was_up is False:
                 log.warning(f"SERVER RECOVERED {ip} is reachable again")
             elif was_up is None:
